@@ -18,5 +18,15 @@ static inline uint8_t inb(uint16_t port)
                       : "Nd"(port));
     return ret;
 }
+static inline uint32_t irq_save(void)
+{
+    uint32_t flags;
+    asm volatile("pushfl; popl %0; cli" : "=r"(flags) :: "memory");
+    return flags;
+}
 
+static inline void irq_restore(uint32_t flags)
+{
+    asm volatile("pushl %0; popfl" :: "r"(flags) : "memory", "cc");
+}
 #endif
