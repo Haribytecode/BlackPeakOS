@@ -10,7 +10,7 @@
 #include "heap.h"
 extern void tss_flush(void);
 extern void enter_user_mode_v2(void);
-extern uint8_t frame_bitmap[1024];
+extern uint8_t frame_bitmap[MAX_FRAMES];
 
 void task_a(void);
 void task_b(void);
@@ -24,10 +24,10 @@ extern uint32_t __phys_page_directory;
 void kernel_main(void)
 {
         // --- Frame allocator init ---
-    extern uint8_t frame_bitmap[1024];
+    extern uint8_t frame_bitmap[MAX_FRAMES];
     extern uint32_t __phys_bss_end;               // linker symbol, NOT an array
 
-    for (int i = 0; i < 1024; i++)
+    for (int i = 0; i < MAX_FRAMES; i++)
         frame_bitmap[i] = 0;
 
     // Physical address of the end of the kernel's BSS (must use &)
@@ -35,10 +35,10 @@ void kernel_main(void)
 
     // Mark every frame from 8 MB up to kernel_phys_end as used
     for (uint32_t p = 0x800000; p < kernel_phys_end; p += 0x1000) {
-        uint32_t idx = (p - 0x800000) / 0x1000;
-        if (idx < 1024)
-            frame_bitmap[idx] = 1;
-    }
+    uint32_t idx = (p - 0x800000) / 0x1000;
+    if (idx < MAX_FRAMES)
+        frame_bitmap[idx] = 1;
+}
     
     scheduler_init();
     gdt_init();

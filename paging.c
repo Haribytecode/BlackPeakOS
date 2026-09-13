@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "uart.h"
 
-#define MAX_FRAMES        1024
+
 #define SCRATCH_PDE_INDEX 772
 #define SCRATCH_PT_VIRT   0xC1000000
 
