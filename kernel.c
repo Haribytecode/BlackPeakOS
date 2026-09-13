@@ -7,7 +7,7 @@
 #include "scheduler.h"
 #include "pic.h"
 #include "paging.h"
-
+#include "heap.h"
 extern void tss_flush(void);
 extern void enter_user_mode_v2(void);
 extern uint8_t frame_bitmap[1024];
@@ -15,7 +15,8 @@ extern uint8_t frame_bitmap[1024];
 void task_a(void);
 void task_b(void);
 void user_task_dummy(void);
-
+static void heap_test(void);
+static void heap_stress_test(void);
 /* Linker symbols – use & to get their physical addresses */
 extern uint32_t __phys_scratch_pt;
 extern uint32_t __phys_page_directory;
@@ -50,6 +51,9 @@ void kernel_main(void)
 
     tss_flush();
     idt_init();
+     heap_init();
+    heap_test();
+    heap_stress_test();
     paging_enable();        // just prints a message
 
     // -------------------------------------------------------------
@@ -142,7 +146,113 @@ void kernel_main(void)
         asm volatile("hlt");
     }
 }
+static void heap_test(void)
+{
+    kprint("HEAP TEST START\n");
 
+    uint8_t *a = kmalloc(100);
+    uint8_t *b = kmalloc(200);
+
+    if (!a || !b) {
+        kprint("HEAP TEST FAIL: allocation\n");
+        return;
+    }
+
+    a[0] = 0xAA;
+    a[99] = 0x55;
+    b[0] = 0xCC;
+    b[199] = 0x33;
+
+    if (a[0] != 0xAA || a[99] != 0x55 ||
+        b[0] != 0xCC || b[199] != 0x33) {
+        kprint("HEAP TEST FAIL: memory corruption\n");
+        return;
+    }
+
+    kfree(a);
+    kfree(b);
+
+    uint8_t *c = kmalloc(300);
+
+    if (!c) {
+        kprint("HEAP TEST FAIL: reuse\n");
+        return;
+    }
+
+    c[0] = 0xDE;
+    c[299] = 0xAD;
+
+    if (c[0] != 0xDE || c[299] != 0xAD) {
+        kprint("HEAP TEST FAIL: reused block\n");
+        return;
+    }
+
+    kfree(c);
+
+    kprint("HEAP TEST PASS\n");
+}
+static void heap_stress_test(void)
+{
+    #define STRESS_N 200
+    static uint8_t *ptrs[STRESS_N];
+    static uint32_t sizes[STRESS_N];
+
+    kprint("HEAP STRESS START\n");
+
+    // 1. Allocate 200 blocks of varying sizes, write magic bytes
+    for (int i = 0; i < STRESS_N; i++) {
+        sizes[i] = 8 + (i * 7) % 200;      // 8..207 bytes
+        ptrs[i] = kmalloc(sizes[i]);
+        if (!ptrs[i]) {
+            kprint("HEAP STRESS FAIL at alloc ");
+            kprint_dec(i);
+            kprint("\n");
+            return;
+        }
+        ptrs[i][0]                = (uint8_t)(0xA0 + (i & 0x0F));
+        ptrs[i][sizes[i] - 1]     = (uint8_t)(0xB0 + (i & 0x0F));
+    }
+
+    // 2. Verify every magic byte is intact
+    for (int i = 0; i < STRESS_N; i++) {
+        if (ptrs[i][0] != (uint8_t)(0xA0 + (i & 0x0F)) ||
+            ptrs[i][sizes[i] - 1] != (uint8_t)(0xB0 + (i & 0x0F))) {
+            kprint("HEAP STRESS FAIL: corruption at ");
+            kprint_dec(i);
+            kprint("\n");
+            return;
+        }
+    }
+
+    // 3. Free in reverse order
+    for (int i = STRESS_N - 1; i >= 0; i--)
+        kfree(ptrs[i]);
+
+    // 4. Re-allocate the same sizes, write new magic
+    for (int i = 0; i < STRESS_N; i++) {
+        ptrs[i] = kmalloc(sizes[i]);
+        if (!ptrs[i]) {
+            kprint("HEAP STRESS FAIL at realloc ");
+            kprint_dec(i);
+            kprint("\n");
+            return;
+        }
+        ptrs[i][0] = (uint8_t)(0xC0 + (i & 0x0F));
+    }
+
+    // 5. Verify, then free
+    for (int i = 0; i < STRESS_N; i++) {
+        if (ptrs[i][0] != (uint8_t)(0xC0 + (i & 0x0F))) {
+            kprint("HEAP STRESS FAIL: realloc corruption at ");
+            kprint_dec(i);
+            kprint("\n");
+            return;
+        }
+        kfree(ptrs[i]);
+    }
+
+    kprint("HEAP STRESS PASS\n");
+}
 void task_a(void) {
     while (1) {
         uart_putc('A');
