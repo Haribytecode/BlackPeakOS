@@ -99,8 +99,8 @@ void kernel_main(void)
     // -------------------------------------------------------------
     // 5. Prepare the Ring‑3 user process
     // -------------------------------------------------------------
-    uint32_t user_eip = 0x00200000;
-    uint32_t user_esp = 0x00201000;
+    uint32_t user_eip = 0x00800000;   // PDE 2 — private per process
+    uint32_t user_esp = 0x00900000;   // PDE 2 — private per process
 
     uint32_t phys_code = alloc_frame();
     mark_frame_used(phys_code);
@@ -141,6 +141,7 @@ void kernel_main(void)
     // 6. All tasks ready – enable interrupts and start scheduling
     // -------------------------------------------------------------
     kprint("All tasks created\n");
+    
     asm volatile("sti");
     while (1) {
         asm volatile("hlt");
