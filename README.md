@@ -887,10 +887,9 @@ References
     USTAR (POSIX tar) format specification
 
 License
-
 MIT License.
-Author
 
+Author
 Hariharan J
 
 Systems Programming · Operating Systems · Kernel Development · x86 Architecture
