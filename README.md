@@ -153,144 +153,149 @@ User/Kernel Boundary
         └── INT 0x80 System Calls
 
 Feature Matrix
+
 Boot and Kernel
-Feature	Status
-GRUB Multiboot boot	✅
-BIOS boot path	✅
-x86 assembly bootstrap	✅
-32-bit i386 protected mode	✅
-Freestanding C kernel	✅
-Custom linker script	✅
-Higher-half kernel layout	✅
-Kernel initialization pipeline	✅
-Monolithic kernel architecture	✅
+
+Features
+GRUB Multiboot boot	                                
+BIOS boot path	                                    
+x86 assembly bootstrap                            	
+32-bit i386 protected mode	                        
+Freestanding C kernel                              	
+Custom linker script	                             
+Higher-half kernel layout	                         
+Kernel initialization pipeline	                    
+Monolithic kernel architecture	                    
+
 CPU Protection and Descriptor Tables
-Feature	Status
-Global Descriptor Table (GDT)	✅
-Kernel code/data segments	✅
-User code/data segments	✅
-Interrupt Descriptor Table (IDT)	✅
-Task State Segment (TSS)	✅
-Ring 0 execution	✅
-Ring 3 execution	✅
-Ring 0 ↔ Ring 3 transitions	✅
-TSS-based kernel stack switching	✅
+
+Global Descriptor Table (GDT)	                      
+Kernel code/data segments                         	
+User code/data segments	
+Interrupt Descriptor Table (IDT)	
+Task State Segment (TSS)	
+Ring 0 execution	
+Ring 3 execution	
+Ring 0 ↔ Ring 3 transitions	
+TSS-based kernel stack switching	
 Interrupts and Exceptions
-Feature	Status
-IDT initialization	✅
-ISR infrastructure	✅
-Exception handling	✅
-IRQ infrastructure	✅
-Programmable Interrupt Controller (PIC)	✅
-Programmable Interval Timer (PIT)	✅
-Hardware timer interrupts (IRQ0)	✅
-Interrupt-driven preemption	✅
-Kernel panic handling	✅
-Keyboard interrupt handler code	✅ (registered path present; IRQ1 currently masked)
+IDT initialization	
+ISR infrastructure	
+Exception handling	
+IRQ infrastructure	
+Programmable Interrupt Controller (PIC)	
+Programmable Interval Timer (PIT)	
+Hardware timer interrupts (IRQ0)	
+Interrupt-driven preemption	
+Kernel panic handling	
+Keyboard interrupt handler code	 (registered path present; IRQ1 currently masked)
 Memory Management
-Feature	Status
-32-bit x86 paging	✅
-Higher-half kernel mapping	✅
-Recursive page-directory mapping	✅
-Bitmap physical frame allocator	✅
-Dynamic virtual page mapping (map_page)	✅
-Scratch page-table window	✅
-TLB invalidation (invlpg + CR3 reload)	✅
-Per-process page directories	✅
-CR3 address-space switching	✅
-User/supervisor page permissions	✅
-Read/write permission control	✅
-Shared kernel mappings across processes	✅
-Isolated user address space (PDE 2+)	✅
-Demand-paging foundation	✅ (page-fault handler + lazy allocation hook)
+
+32-bit x86 paging	
+Higher-half kernel mapping	
+Recursive page-directory mapping	
+Bitmap physical frame allocator	
+Dynamic virtual page mapping (map_page)	
+Scratch page-table windows
+TLB invalidation (invlpg + CR3 reload)	
+Per-process page directories	
+CR3 address-space switching	
+User/supervisor page permissions	
+Read/write permission control	
+Shared kernel mappings across processes	
+Isolated user address space (PDE 2+)	
+Demand-paging foundation	(page-fault handler + lazy allocation hook)
+
 Kernel Heap
-Feature	Status
-Heap initialization	✅
-kmalloc / kfree	✅
-Block splitting	✅
-Block coalescing (forward + backward)	✅
-Page-by-page heap growth	✅
-4-byte size alignment	✅
-Stress test (200 mixed allocations)	✅
+
+Heap initialization	
+kmalloc / kfree	
+Block splitting	
+Block coalescing (forward + backward)	
+Page-by-page heap growth	
+4-byte size alignment	
+Stress test (200 mixed allocations)
+
 Virtual File System (VFS)
-Feature	Status
-vfs_node_t abstraction	✅
-vfs_ops_t (read/write/open/close/readdir/finddir)	✅
-vfs_init	✅
-vfs_mount	✅
-vfs_root	✅
-Path lookup (vfs_lookup)	✅
-Multi-filesystem coexistence	✅
+
+vfs_node_t abstraction	
+vfs_ops_t (read/write/open/close/readdir/finddir)	
+vfs_init	
+vfs_mount	
+vfs_root	
+Path lookup (vfs_lookup)	
+Multi-filesystem coexistence	
 ramfs (Writable In-Memory Filesystem)
-Feature	Status
-Directory creation	✅
-File creation	✅
-File read	✅
-File write	✅
-readdir / finddir	✅
-Directory attachment	✅
-Up to 64 children per directory	✅
-Up to 2048 bytes per file	✅
+Directory creation	
+File creation	
+File read	
+File write	
+readdir / finddir	
+Directory attachment	
+Up to 64 children per directory	
+Up to 2048 bytes per file
+
 tarfs (Read-Only Embedded Filesystem)
-Feature	Status
-USTAR header parsing	✅
-Octal size field parsing	✅
-512-byte block walk	✅
-Zero-block end detection	✅
-File node creation	✅
-finddir via readdir scan	✅
-File read (tarfs_read)	✅
-Mounted at /initrd	✅
-Data embedded via .incbin	✅
+
+USTAR header parsing	
+Octal size field parsing	
+512-byte block walk	
+Zero-block end detection	
+File node creation	
+finddir via readdir scan	
+File read (tarfs_read)	
+Mounted at /initrd	
+Data embedded via .incbin
+
 Scheduling and Multitasking
-Feature	Status
-Round-robin scheduler	✅
-PIT-driven preemption (100 Hz)	✅
-Per-task kernel stacks	✅
-Task states (UNUSED / READY / RUNNING)	✅
-CR3 switching per task	✅
-TSS esp0 update per task	✅
-Assembly context save/restore	✅
-Kernel task scheduling	✅
-Ring 3 task scheduling	✅
-Concurrent task execution verified (ABABAB)	✅
+
+Round-robin scheduler	
+PIT-driven preemption (100 Hz)	
+Per-task kernel stacks	
+Task states (UNUSED / READY / RUNNING)	
+CR3 switching per task	
+TSS esp0 update per task	
+Assembly context save/restore	
+Kernel task scheduling	
+Ring 3 task scheduling	
+Concurrent task execution verified (ABABAB)	
 User Mode and Privilege Separation
-Feature	Status
-Ring 3 execution	✅
-enter_user_mode_v2 IRET transition	✅
-User code mapping	✅
-User stack mapping	✅
-User address space isolation	✅
-TSS kernel stack switching	✅
-Return to Ring 3 after syscall	✅
+Ring 3 execution	
+enter_user_mode_v2 IRET transition	
+User code mapping	
+User stack mapping	
+User address space isolation	
+TSS kernel stack switching	
+Return to Ring 3 after syscall
+
 System Calls
-Feature	Status
-INT 0x80 gate (DPL 3)	✅
-Syscall stub (context save/restore)	✅
-Syscall handler	✅
-File-related syscalls (open/read/write)	⬜ planned
+
+INT 0x80 gate (DPL 3)	
+Syscall stub (context save/restore)	
+Syscall handler	
+File-related syscalls (open/read/write)	 planned(NOT ADDED YET)
 Drivers and Hardware
-Feature	Status
-VGA text-mode console	✅
-UART serial console (COM1)	✅
-PIC remap (IRQ0–15 → 0x20–0x2F)	✅
-PIT configuration (100 Hz)	✅
-Keyboard scan-code driver code	✅
-Keyboard IRQ actively dispatched	⬜ (IRQ1 currently masked)
-Kernel panic handler	✅
+VGA text-mode console	
+UART serial console (COM1)	
+PIC remap (IRQ0–15 → 0x20–0x2F)	
+PIT configuration (100 Hz)	
+Keyboard scan-code driver code	
+Keyboard IRQ actively dispatched	(IRQ1 currently masked)
+Kernel panic handler
+
 Validation
-Item	Status
-Boot verified in QEMU	✅
-Boot verified in Oracle VirtualBox	✅
-Boot verified in Bochs	✅
-VGA output verified	✅
-UART output verified	✅
-Scheduler verified via ABABAB stream	✅
-Syscalls verified via continuous >>> SYSCALL FROM RING 3 <<<	✅
-VFS verified via vfs_lookup	✅
-ramfs verified via write + read round-trip	✅
-tarfs verified via three successive tar-content changes	✅
-Heap verified via 200-allocation stress test	✅
+
+Boot verified in QEMU	
+Boot verified in Oracle VirtualBox	
+Boot verified in Bochs	
+VGA output verified	
+UART output verified	
+Scheduler verified via ABABAB stream	
+Syscalls verified via continuous >>> SYSCALL FROM RING 3 <<<	
+VFS verified via vfs_lookup	
+ramfs verified via write + read round-trip	
+tarfs verified via three successive tar-content changes	
+Heap verified via 200-allocation stress test	
 Boot Pipeline
 
 The kernel initialization follows a staged low-level boot process:
@@ -371,6 +376,7 @@ Physical memory
     Frames allocated on demand for page tables, page directories, and heap pages
 
 Virtual memory layout
+
 Virtual range	Purpose
 0x00000000 – 0x007FFFFF	Identity mapped (bootstrap, kernel stack)
 0x00800000 – 0x008FFFFF	User code and stack (PDE 2)
