@@ -10,10 +10,12 @@
 #include "heap.h"
 #include "vfs.h"
 #include "ramfs.h"
+#include "tarfs.h"
 extern void tss_flush(void);
 extern void enter_user_mode_v2(void);
 extern uint8_t frame_bitmap[MAX_FRAMES];
-
+extern uint8_t initrd_start[];
+extern uint8_t initrd_end[];
 void task_a(void);
 void task_b(void);
 void user_task_dummy(void);
@@ -56,10 +58,11 @@ void kernel_main(void)
     idt_init();
     heap_init();
     heap_test();
-    // heap_stress_test();
+    heap_stress_test();
              vfs_init();
     ramfs_init();
-
+    tarfs_init();
+       
     vfs_node_t *hello = ramfs_create_file(vfs_root(), "hello");
     if (hello) {
         uint8_t msg[] = "hi from ramfs";
@@ -71,6 +74,18 @@ void kernel_main(void)
         kprint("ramfs test: ");
         kprint((char *)buf);
         kprint("\n");
+    }
+        
+               vfs_node_t *tf = vfs_lookup("/initrd/hello.txt");
+    if (tf) {
+        uint8_t tbuf[64];
+        uint32_t tgot = tf->ops->read(tf, 0, sizeof(tbuf)-1, tbuf);
+        tbuf[tgot] = '\0';
+        kprint("tarfs read: ");
+        kprint((char *)tbuf);
+        kprint("\n");
+    } else {
+        kprint("tarfs: file not found\n");
     }
     paging_enable(); // just prints a message
 

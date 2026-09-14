@@ -113,7 +113,7 @@ static vfs_node_t *ramfs_readdir(vfs_node_t *n, uint32_t idx)
     return d->children[idx];
 }
 
-static void attach(vfs_node_t *parent, vfs_node_t *child)
+void ramfs_attach(vfs_node_t *parent, vfs_node_t *child)
 {
     ramfs_dir_t *d = (ramfs_dir_t *)parent->internal;
     if (!d || d->count >= RAMFS_MAX_CHILDREN) return;
@@ -124,7 +124,7 @@ vfs_node_t *ramfs_create_file(vfs_node_t *parent, const char *name)
 {
     vfs_node_t *n = alloc_node(name, VFS_FILE);
     if (!n) return 0;
-    if (parent) attach(parent, n);
+    if (parent) ramfs_attach(parent, n);
     return n;
 }
 
@@ -132,7 +132,7 @@ vfs_node_t *ramfs_create_dir(vfs_node_t *parent, const char *name)
 {
     vfs_node_t *n = alloc_node(name, VFS_DIRECTORY);
     if (!n) return 0;
-    if (parent) attach(parent, n);
+    if (parent) ramfs_attach(parent, n);
     return n;
 }
 

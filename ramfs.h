@@ -6,5 +6,5 @@
 void        ramfs_init(void);
 vfs_node_t *ramfs_create_file(vfs_node_t *parent, const char *name);
 vfs_node_t *ramfs_create_dir (vfs_node_t *parent, const char *name);
-
+void ramfs_attach(vfs_node_t *parent, vfs_node_t *child);
 #endif

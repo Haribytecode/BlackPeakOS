@@ -20,26 +20,31 @@ vfs_node_t *vfs_root(void){
     return root;
 }
 
-vfs_node_t *vfs_lookup(const char *path){
-    if(!root || !path) return 0; //if root node is empty or the path is empty i.e no directory flow there,then return 0
-    if(path[0]=='/') path++; //means the first one we move just 
-    if(path[0]=='\0') return root; //marks the end 
-    vfs_node_t *cur=root;
+vfs_node_t *vfs_lookup(const char *path)
+{
+    if (!root || !path) return 0;
+
+    const char *p = path;
+    if (*p == '/') p++;
+    if (*p == '\0') return root;
+
+    vfs_node_t *cur = root;
     char component[64];
-    while(*path){ //keeps processing until reaches end of component
-        int i=0;
-        while(path[i] && path[i]!='/' && i<63){  //just checking valid,inside ? ,also no overflow
-            component[i]=path[i];
+
+    while (*p) {
+        int i = 0;
+        while (p[i] && p[i] != '/' && i < 63) {
+            component[i] = p[i];
             i++;
         }
-        //in c marking the end of string as \0 is mandatory as afterthat only it is a valid string
-        component[i]='\0';
-        path+=i;
-        if(*path=='/') path++;
-        if(!cur->ops || !cur->ops->finddir) return 0; //cur represents / the root compoenet egfile/folder
-        cur=cur->ops->finddir(cur,component); //eg cur=/ then component=etc
-        if(!cur) return 0;
+        component[i] = '\0';
+
+        p += i;
+        if (*p == '/') p++;
+
+        if (!cur->ops || !cur->ops->finddir) return 0;
+        cur = cur->ops->finddir(cur, component);
+        if (!cur) return 0;
     }
     return cur;
-
 }

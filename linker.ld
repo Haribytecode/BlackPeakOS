@@ -24,16 +24,27 @@ SECTIONS
         *(.text)
     }
 
-    .rodata : AT(LOADADDR(.text) + SIZEOF(.text))
+    . = ALIGN(4096);
+
+    .rodata : AT(ALIGN(LOADADDR(.text) + SIZEOF(.text), 4096))
     {
         *(.rodata*)
     }
+
     . = ALIGN(4096);
 
-    .data : AT(ALIGN(LOADADDR(.rodata) + SIZEOF(.rodata), 4096))
+    .initrd : AT(ALIGN(LOADADDR(.rodata) + SIZEOF(.rodata), 4096))
+    {
+        *(.initrd)
+    }
+
+    . = ALIGN(4096);
+
+    .data : AT(ALIGN(LOADADDR(.initrd) + SIZEOF(.initrd), 4096))
     {
         *(.data)
     }
+
     . = ALIGN(4096);
     .bss : AT(ALIGN(LOADADDR(.data) + SIZEOF(.data), 4096))
     {
