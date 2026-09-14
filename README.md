@@ -894,8 +894,6 @@ Author
 Hariharan J
 
 Systems Programming · Operating Systems · Kernel Development · x86 Architecture
-<div align="center">
 BlackPeak OS
 
 From bootloader to Ring 3 — building the kernel from the hardware boundary upward.
-</div> ```
