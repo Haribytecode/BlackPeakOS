@@ -28,17 +28,16 @@ SECTIONS
     {
         *(.rodata*)
     }
+    . = ALIGN(4096);
 
-        .data : AT(LOADADDR(.rodata) + SIZEOF(.rodata))
+    .data : AT(ALIGN(LOADADDR(.rodata) + SIZEOF(.rodata), 4096))
     {
-        . = ALIGN(4096);          /* ← force page‑alignment */
         *(.data)
     }
-
+    . = ALIGN(4096);
     .bss : AT(ALIGN(LOADADDR(.data) + SIZEOF(.data), 4096))
     {
         _bss_start = .;       /* CRITICAL FIX: Export the virtual start address of BSS */
-        . = ALIGN(4096);
         *(COMMON)
         *(.bss)
         _bss_end = .;         /* CRITICAL FIX: Export the virtual end address of BSS */

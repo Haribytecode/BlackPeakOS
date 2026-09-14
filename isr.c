@@ -9,7 +9,11 @@ extern void map_page(uint32_t virt, uint32_t phys);
 
 void isr_handler(void)
 {
-    kprint("ISR\n");
+    uint32_t *stack;
+    asm volatile("mov %%esp, %0" : "=r"(stack));
+    kprint("ISR: eip="); kprint_hex(stack[9]);
+    kprint(" cs="); kprint_hex(stack[10]);
+    kprint("\n");
     while (1);
 }
 void page_fault_handler(uint32_t error)
