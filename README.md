@@ -157,8 +157,7 @@ Feature Matrix
 Boot and Kernel
 
 Features
-GRUB Multiboot boot	                                
-BIOS boot path	                                    
+GRUB Multiboot boot	                                                                  
 x86 assembly bootstrap                            	
 32-bit i386 protected mode	                        
 Freestanding C kernel                              	
